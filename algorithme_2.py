@@ -10,7 +10,7 @@ def get_the_most_of_budget(actions, budget):
     # Actions sorted by density
     best_actions = actions
     profit = 0
-    # We will increment the cheaper action index instead in the list instead of reorganizing the list
+    # We will increment the cheaper action index in the list instead of reorganizing the list
     # To optimize the result
     actions_sorted_by_cheaper = sorted(actions, key= lambda action:action['cost'], reverse=True)
     cheaper_action_index = 0
@@ -22,7 +22,7 @@ def get_the_most_of_budget(actions, budget):
     buying_index = 0
 
     # As long as our current money allows us to buy at least the cheapest action
-    # We will try to get the next best action to buy
+    # We will continue. If not, looping is unnecessary and we will abort it.
     while money_left >= float(actions_sorted_by_cheaper[cheaper_action_index]['cost']):
         # If we can afford the best action
         if can_buy(money_left, best_actions[buying_index]['cost']):
@@ -34,11 +34,12 @@ def get_the_most_of_budget(actions, budget):
             # The cheapest is now the old cheapest + 1
             if best_actions[buying_index] == actions_sorted_by_cheaper[cheaper_action_index]:
                 cheaper_action_index += 1
-        # Now we repeat on the next action until we run out of budget
+        # Now we repeat on the previous action until we run out of budget
         buying_index+=1
+    print(f"Il y avait {len(actions)} actions parmi lesquelles choisir.")
     print(f"Nous n'avons plus d'argent à dépenser")
-    print(f"Il nous reste {money_left} € ")
-    print(f"Nous avons un profit total de :{profit} € établi sur {len(actions_to_buy)} actions.")
+    print(f"Il nous reste {money_left} € sur {budget} € de budget de départ. ")
+    print(f"Nous avons un profit total de :{profit} € réparti sur {len(actions_to_buy)} actions.")
     #print(actions_to_buy)
 
 def get_actions_from_files():
