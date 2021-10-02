@@ -39,13 +39,16 @@ def get_the_most_of_budget(actions, budget):
         # Now we repeat on the previous action until we run out of budget
         buying_index+=1
     print(f"Il y avait {len(actions)} actions parmi lesquelles choisir.")
-    print(f"Nous n'avons plus d'argent à dépenser")
     print(f"Il nous reste {money_left} € sur {budget} € de budget de départ. ")
-    print(f"Nous avons un profit total de :{profit} € réparti sur {len(actions_to_buy)} actions.")
+    print(f"Nous n'avons plus d'argent à dépenser car il nous manque "
+          f"{float(actions_sorted_by_cheaper[cheaper_action_index]['cost']) - money_left} "
+          f"pour acheter l'action la moins chère.'")
+
+    print(f"Nous avons un profit total de : {profit} € réparti sur {len(actions_to_buy)} actions.")
     #print(actions_to_buy)
 
 
-###                  RECUPERATION DES ACTIONS CSV + CALCUL DE LA DENSITE                 ####
+###                  RECUPERATION DES ACTIONS CSV + CALCUL DE LA DENSITE / du BENEF                ####
 
 def get_actions_from_files():
     file = open('resources\\dataset2_Python+P7.csv')
@@ -63,7 +66,9 @@ def get_actions_from_files():
         if float(str_elements[1]) and float(str_elements[2]) > 0:
             element = {'name' : str_elements[0],
                        'cost' : str_elements[1],
-                       'benef' : str_elements[2],
+                       'percent_benef':str_elements[2],
+                       # Le benef = au cout * %benefice / 100
+                       'benef' : float(str_elements[1]) * float(str_elements[2]) / 100,
                        # La densité est le résultat du benef / cout
                        'densite': float(str_elements[2]) / float(str_elements[1])
                        }
@@ -82,7 +87,8 @@ def main():
     # Result of algorithm
     start_time = time.time()
     actions = get_actions_from_files()
-    actions_by_density = sorted(actions, key=lambda action: action['densite'], reverse=True)
+    # Turns out that we have best results according to benef rather than density
+    actions_by_density = sorted(actions, key=lambda action: action['benef'], reverse=True)
     get_the_most_of_budget(actions_by_density, wallet)
 
     duration = time.time() - start_time
