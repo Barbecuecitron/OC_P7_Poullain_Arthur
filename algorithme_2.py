@@ -5,6 +5,8 @@ def can_buy(money_left, action_cost):
             return True
         return False
 
+###                             PARTIE ALGORITHME                          ####
+
 def get_the_most_of_budget(actions, budget):
     actions_to_buy = []
     # Actions sorted by density
@@ -41,6 +43,9 @@ def get_the_most_of_budget(actions, budget):
     print(f"Il nous reste {money_left} € sur {budget} € de budget de départ. ")
     print(f"Nous avons un profit total de :{profit} € réparti sur {len(actions_to_buy)} actions.")
     #print(actions_to_buy)
+
+
+###                  RECUPERATION DES ACTIONS CSV + CALCUL DE LA DENSITE                 ####
 
 def get_actions_from_files():
     file = open('resources\\dataset2_Python+P7.csv')
