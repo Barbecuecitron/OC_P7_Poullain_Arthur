@@ -1,26 +1,20 @@
 import time
 
+
 def can_buy(money_left, action_cost):
-        if money_left - float(action_cost) >= 0:
-            return True
-        return False
+    if money_left - float(action_cost) >= 0:
+        return True
+    return False
 
-###                             PARTIE ALGORITHME                          ####
 
-def get_the_most_of_budget(actions, budget, sorting_type):
+def get_the_most_of_budget(actions, budget):
     actions_to_buy = []
     # Actions sorted by density
     best_actions = actions
     profit = 0
-    # We will increment the cheaper action index in the list instead of reorganizing the list
-    # To optimize the result
-    actions_sorted_by_cheaper = sorted(actions, key= lambda action:action['cost'], reverse=True)
+    actions_sorted_by_cheaper = sorted(actions, key=lambda action: action['cost'], reverse=True)
     cheaper_action_index = 0
-    # Initialize our money as the client's budget from parameter
     money_left = budget
-    # We will buy index 0 since it's the best of all
-    # And increment it instead of reorganizing the list, just like we did with the cheapest action
-    # This way we don't need any looping / slowing process.
     buying_index = 0
 
     # As long as our current money allows us to buy at least the cheapest action
@@ -32,22 +26,20 @@ def get_the_most_of_budget(actions, budget, sorting_type):
             actions_to_buy.append(best_actions[buying_index])
             money_left = money_left - float(best_actions[buying_index]['cost'])
             profit += float(best_actions[buying_index]['benef'])
+
             # If the action we are buying is the cheapest one, we must let the program know
-            # The cheapest is now the old cheapest + 1
-            if best_actions[buying_index] == actions_sorted_by_cheaper[cheaper_action_index]:
-                cheaper_action_index += 1
+            # if best_actions[buying_index] == actions_sorted_by_cheaper[cheaper_action_index]:
+            # let's remove the actual cheaper one from the list
+            actions_sorted_by_cheaper.remove(best_actions[buying_index])
         # Now we repeat on the previous action until we run out of budget
-        buying_index+=1
-    resultat = { "money_left" : money_left, "profit" : profit, "actions_to_buy" : actions_to_buy}
+        buying_index += 1
+    resultat = {"money_left": money_left, "profit": profit, "actions_to_buy": actions_to_buy}
     return resultat
 
-    #print(actions_to_buy)
-
-
-###                  RECUPERATION DES ACTIONS CSV + CALCUL DE LA DENSITE / du BENEF                ####
 
 def get_actions_from_files():
-    file = open('resources\\actions_premiere_partie.csv')
+    # With open as
+    file = open('resources\\dataset2_Python+P7.csv')
     data = file.read()
     file.close()
     # Split file by lines
@@ -59,22 +51,20 @@ def get_actions_from_files():
     for line in file_lines:
         str_elements = line.split(',')
         # Let's not add negative cost / benefits
-        if float(str_elements[1]) and float(str_elements[2]) > 0:
-            element = {'name' : str_elements[0],
-                       'cost' : str_elements[1],
-                       'percent_benef':str_elements[2],
+        if float(str_elements[1]) > 0 and float(str_elements[2]) > 0:
+            element = {'name': str_elements[0],
+                       'cost': str_elements[1],
+                       'percent_benef': str_elements[2],
                        # Le benef = au cout * %benefice / 100
-                       'benef' : float(str_elements[1]) * float(str_elements[2]) / 100,
+                       'benef': float(str_elements[1]) * float(str_elements[2]) / 100,
                        # La densité est le résultat du benef / cout
                        'densite': float(str_elements[2]) / float(str_elements[1])
                        }
 
-        if float(element['cost']) > 0:
             formated_actions.append(element)
-   # print(f"Les formated actions sont {formated_actions}")
-    #print(formated_actions)
+    # print(f"Les formated actions sont {formated_actions}")
+    # print(formated_actions)
     return formated_actions
-
 
 
 def main():
@@ -82,7 +72,7 @@ def main():
     # Result of algorithm
     start_time = time.time()
     actions = get_actions_from_files()
-    print(f"Lancement de l'analyse de {len(actions)} actions.")
+    print(f"Lancement de l'analyse de {len(actions)} action(s).")
     # Turns out that we have best results according to benef rather than density
     actions_by_density = sorted(actions, key=lambda action: action['densite'], reverse=True)
     actions_by_benef = sorted(actions, key=lambda action: action['benef'], reverse=True)
@@ -93,27 +83,34 @@ def main():
     # from buying more cost efficient, but less pricy actions.
     # Since they are absolutely inexpensive "ressourcewise" we can allow
     # Both running in a linear manner and compare them.
-    density_comparison = get_the_most_of_budget(actions_by_density, wallet, "Densite")
-    benefits_comparison = get_the_most_of_budget(actions_by_benef,wallet, "Bénéfice")
+    density_comparison = get_the_most_of_budget(actions_by_density, wallet)
+    benefits_comparison = get_the_most_of_budget(actions_by_benef, wallet)
     worst_choice = None
     best_choice = None
+
     if density_comparison['profit'] > benefits_comparison['profit']:
         best_choice = density_comparison
         worst_choice = benefits_comparison
     else:
         best_choice = benefits_comparison
         worst_choice = density_comparison
-    print(best_choice)
 
     print(
         f"\nIl nous reste {best_choice['money_left']} € sur {wallet} € de budget de départ. ")
 
     print(
-        f"Nous avons un profit total de : {best_choice['profit']} € réparti sur {len(best_choice['actions_to_buy'])} actions.")
+        f"Nous avons un profit total de : {best_choice['profit']} € répartis sur {len(best_choice['actions_to_buy'])} "
+        f"action(s).")
     print(
-        f"Le choix secondaire nous rapporterait {worst_choice['profit']}")
+        f"Le choix secondaire nous rapportait {worst_choice['profit']} € répartis sur "
+        f"{len(worst_choice['actions_to_buy'])} action(s).")
+
+    for action in best_choice["actions_to_buy"]:
+        print(action)
+
     duration = time.time() - start_time
     print(f"Le calcul de possibilités a pris {duration} secondes")
+
 
 if __name__ == '__main__':
     main()
