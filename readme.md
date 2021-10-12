@@ -1,8 +1,8 @@
 # OC_P7_Poullain_Arthur
 Python version used : Python 3.8.5
----
+
 Résolution de problèmes en utilisant des algorithmes en Python
----
+
 # Installation guide :
 * Install Python3.8 : ```$ sudo apt install python3.8```
 * Install the pip package if you don't have it : ``` $ sudo apt install python3-pip ```
