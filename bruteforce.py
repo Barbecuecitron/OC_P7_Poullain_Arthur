@@ -4,22 +4,21 @@ import time
 def brute_force(elements):
     if len(elements) == 0:
         return [[]]
-    firstElement = elements[0]
+    first_element = elements[0]
     # Copy the array without first element
     rest = elements[1:]
 
-    combsWithoutFirst = brute_force(rest)
-    combsWithFirst = []
+    combs_without_first = brute_force(rest)
+    combs_with_first = []
 
-    for comb in combsWithoutFirst:
-        combWithFirst = [*comb, firstElement]
-        combsWithFirst.append(combWithFirst)
+    for comb in combs_without_first:
+        comb_with_first = [*comb, first_element]
+        combs_with_first.append(comb_with_first)
     # If combinations are still possible
-    return [*combsWithoutFirst, *combsWithFirst]
+    return [*combs_without_first, *combs_with_first]
 
 
 def try_all_possibilities():
-    total = 0
     file = open('resources\\actions_premiere_partie.csv')
     data = file.read()
     file.close()
